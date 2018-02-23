@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# goss-prove-runner
+
+# Utility to run goss when called by prove(1)
+# e.g. prove -e goss-prove-runner --ext yaml somedir/
+
+set -eu
+
+num_cpus=$(grep -io vendor_id /proc/cpuinfo | wc -l)
+num_cpus=$(( 2 * num_cpus ))
+
+GOSS_MAX_CONCURRENT="$num_cpus" \
+GOSS_FMT='tap'\
+  goss -g "$1" validate || true
+

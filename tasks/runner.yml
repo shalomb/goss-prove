@@ -1,0 +1,85 @@
+---
+
+# tasks file for goss/runner
+
+# goss_tests:
+#   plans:
+#     - name: postgres
+#       templates:
+#         - /path/to/foo.yaml
+#         - /path/to/bar.yaml
+
+- name: goss/runner
+  debug:
+    msg: "{{ prologue.split('\n') }}"
+  when: prologue is defined
+  tags:
+    - always
+
+- name: Collect goss test plan inventory
+  set_fact:
+    goss_templates:
+      '{{ ([goss_templates | default([]) + item.1]) | sum(start=[]) }}'
+  with_items:
+    - '{{ goss_tests.iteritems() | list }}'
+
+- name: Create goss test plan directories
+  file:
+    path:  '{{ item | dirname }}'
+    state: directory
+    mode:  '0755'
+    owner: 'root'
+    group: 'root'
+  with_items:
+    - '{{ goss_templates }}'
+  tags:
+    - test
+
+- name: Create goss test results directories
+  file:
+    path:  '{{ item | dirname }}'
+    state: directory
+    mode:  '0777'
+    owner: 'root'
+    group: 'root'
+  with_items:
+    - '{{ goss_templates | map("regex_replace", "^", "/var/run") | list }}'
+  tags:
+    - test
+
+- name: Synchronize goss test plans
+  template:
+    src:   '{{ item | regex_replace("^/", "") }}.j2'
+    dest:  '{{ item }}'
+    mode:  '0755'
+    owner: 'root'
+    group: 'root'
+  with_items:
+    - '{{ goss_templates }}'
+  tags:
+    - test
+
+- name: Install goss helper scripts
+  copy:
+    src:  '{{ item | regex_replace("^/", "") }}'
+    dest: '{{ item }}'
+    mode: '0555'
+    owner: root
+    group: root
+  with_items:
+    - /usr/local/bin/goss-prove-runner
+    - /usr/local/bin/goss-prove
+  tags:
+    - goss-prove
+    - goss-prove-install
+
+- name: Run goss test plans
+  command:
+    goss-prove '{{ item | regex_replace("^/etc/goss/|.ya?ml", "") }}'
+  with_items:
+    - '{{ goss_templates }}'
+  register: goss_output
+  changed_when: False
+  tags:
+    - test
+

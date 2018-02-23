@@ -1,0 +1,25 @@
+---
+
+# tasks file for goss
+
+- name: Refresh facts
+  setup:
+  when:
+    - ansible_architecture is not defined
+  tags:
+    - goss-install
+
+- name: Install goss
+  include: install.yml
+  tags:
+    - goss-install
+
+- name: Run goss tests
+  include: runner.yml
+  when:
+    - goss_tests is defined
+  tags:
+    - goss-run
+    - goss-test
+    - test
+

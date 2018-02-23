@@ -1,0 +1,44 @@
+---
+
+# tasks file for goss/install
+
+- name: Download goss binary
+  get_url:
+    url:  '{{ goss.url }}'
+    dest: '/tmp/{{ goss.url | basename }}'
+    mode: '0755'
+    checksum: 'sha256:{{ goss.sha256sum }}'
+  delegate_to: localhost
+  become: False
+  run_once: True
+  tags:
+    - pkg
+
+- name: Install goss
+  copy:
+    src:   '/tmp/{{ goss.url | basename }}'
+    dest:  /usr/local/bin/goss
+    mode:  '0755'
+    owner: root
+    group: root
+    validate: '%s --version'
+  tags:
+    - pkg
+
+- name: Create goss directories
+  file:
+    state: directory
+    path:  '{{ item.path }}'
+    mode:  '{{ item.mode }}'
+    owner: root
+    group: root
+  with_items:
+    - path: /etc/goss/
+      mode: '0755'
+    - path: /var/run/goss/
+      mode: '0777'
+  tags:
+    - conf
+    - dirs
+
+
