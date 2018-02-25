@@ -33,7 +33,7 @@
   with_items:
     - '{{ goss_templates }}'
   tags:
-    - test
+    - test-install
 
 - name: Create goss test results directories
   file:
@@ -45,7 +45,7 @@
   with_items:
     - '{{ goss_templates | map("regex_replace", "^", "/var/run") | list }}'
   tags:
-    - test
+    - test-install
 
 - name: Synchronize goss test plans
   template:
@@ -57,7 +57,7 @@
   with_items:
     - '{{ goss_templates }}'
   tags:
-    - test
+    - test-install
 
 - name: Install goss helper scripts
   copy:

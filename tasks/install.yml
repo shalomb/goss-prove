@@ -17,7 +17,7 @@
 - name: Install goss
   copy:
     src:   '/tmp/{{ goss.url | basename }}'
-    dest:  /usr/local/bin/goss
+    dest:  '{{ goss.path }}'
     mode:  '0755'
     owner: root
     group: root
@@ -33,7 +33,7 @@
     owner: root
     group: root
   with_items:
-    - path: /etc/goss/
+    - path: '{{ goss.directories }}'
       mode: '0755'
     - path: /var/run/goss/
       mode: '0777'
@@ -41,4 +41,45 @@
     - conf
     - dirs
 
+- name: Create custom facts directory
+  file:
+    path:  /etc/ansible/facts.d
+    state: directory
+    mode:  '0655'
+    owner: root
+    group: root
+  tags:
+    - fact
+
+- name: Generate goss custom facts
+  copy:
+    dest: /etc/ansible/facts.d/goss.fact
+    mode: '0755'
+    content: |
+      #!/bin/sh -eu
+
+      cat <<EOF
+      { "version":     "{{ goss.version }}",
+        "path":        "{{ goss.path }}",
+        "directories": "{{ goss.directories }}",
+        "source":      "{{ goss.url }}"
+      }
+      EOF
+  tags:
+    - fact
+
+- name: Generate goss test plan facts
+  copy:
+    dest: /etc/ansible/facts.d/goss_plans.fact
+    mode: '0755'
+    content: |
+      #!/bin/sh -eu
+
+      goss-prove -l |
+        awk '/\*/{ print "\"file\": ""\""$3"\", \"timestamp\":\""$2"\"" }' |
+        sed -r -e 's/^/{ /' -e 's/$/ },/' |
+        sed -r -e '1s/^/[ /' -e '$s/},/} ]/'
+
+  tags:
+    - fact
 
