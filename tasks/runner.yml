@@ -22,6 +22,8 @@
       '{{ ([goss_templates | default([]) + item.1]) | sum(start=[]) }}'
   with_items:
     - '{{ goss_tests.iteritems() | list }}'
+  tags:
+    - always
 
 - name: Create goss test plan directories
   file:
