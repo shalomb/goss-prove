@@ -8,9 +8,9 @@
 set -eu
 
 num_cpus=$(grep -io vendor_id /proc/cpuinfo | wc -l)
-num_cpus=$(( 2 * num_cpus ))
+concurrent_jobs=$(( 4 * num_cpus ))
 
-GOSS_MAX_CONCURRENT="$num_cpus" \
-GOSS_FMT='tap'\
-  goss -g "$1" validate || true
+GOSS_MAX_CONCURRENT="$concurrent_jobs" \
+GOSS_FMT='tap' \
+  goss --gossfile "$1" validate || true
 
