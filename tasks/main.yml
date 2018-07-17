@@ -4,8 +4,6 @@
 
 - name: Refresh facts
   setup:
-  when:
-    - ansible_architecture is not defined
   tags:
     - goss-install
 
