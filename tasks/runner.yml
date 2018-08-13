@@ -81,6 +81,10 @@
   with_items:
     - '{{ goss_templates }}'
   register: goss_output
+  until:
+    - goss_output.rc == 0
+  retries: '{{ goss_retries | default(10) }}'
+  delay:   '{{ goss_delay   | default(50) }}'
   changed_when: False
   tags:
     - test
