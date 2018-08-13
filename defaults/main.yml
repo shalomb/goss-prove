@@ -2,8 +2,8 @@
 
 # defaults file for goss
 
-goss_version:   v0.3.5
-goss_sha256sum: 5669df08e406abf594de0e7a7718ef389e5dc7cc76905e7f6f64711e6aad7fa3
+goss_version:   v0.3.6
+goss_sha256sum: 53dd1156ab66f2c4275fd847372e6329d895cfb2f0bcbec5f86c1c4df7236dde
 
 goss:
   directories: '/etc/goss/'
