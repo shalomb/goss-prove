@@ -16,6 +16,12 @@
   tags:
     - always
 
+- name: set goss_templates to empty list
+  set_fact:
+    goss_templates: []
+  tags:
+    - always
+
 - name: Collect goss test plan inventory
   set_fact:
     goss_templates:
