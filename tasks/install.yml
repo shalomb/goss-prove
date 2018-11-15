@@ -2,6 +2,13 @@
 
 # tasks file for goss/install
 
+- name: goss/runner
+  debug:
+    msg: "{{ prologue.split('\n') }}"
+  when: prologue is defined
+  tags:
+    - always
+
 - name: Download goss binary
   get_url:
     url:  '{{ goss.url }}'
@@ -77,9 +84,23 @@
 
       goss-prove -l |
         awk '/\*/{ print "\"file\": ""\""$3"\", \"timestamp\":\""$2"\"" }' |
-        sed -r -e 's/^/{ /' -e 's/$/ },/' |
+        sed -r -e 's/^/{ /'  -e 's/$/ },/' |
         sed -r -e '1s/^/[ /' -e '$s/},/} ]/'
 
   tags:
     - fact
+
+- name: Install goss helper scripts
+  copy:
+    src:  '{{ item | regex_replace("^/", "") }}'
+    dest: '{{ item }}'
+    mode: '0555'
+    owner: root
+    group: root
+  with_items:
+    - /usr/local/bin/goss-prove-runner
+    - /usr/local/bin/goss-prove
+  tags:
+    - goss-prove
+    - goss-prove-install
 

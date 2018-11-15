@@ -9,19 +9,6 @@
 #         - /path/to/foo.yaml
 #         - /path/to/bar.yaml
 
-- name: goss/runner
-  debug:
-    msg: "{{ prologue.split('\n') }}"
-  when: prologue is defined
-  tags:
-    - always
-
-- name: set goss_templates to empty list
-  set_fact:
-    goss_templates: []
-  tags:
-    - always
-
 - name: Collect goss test plan inventory
   set_fact:
     goss_templates:
@@ -43,18 +30,6 @@
   tags:
     - test-install
 
-- name: Create goss test results directories
-  file:
-    path:  '{{ item | dirname }}'
-    state: directory
-    mode:  '0777'
-    owner: 'root'
-    group: 'root'
-  with_items:
-    - '{{ goss_templates | map("regex_replace", "^", "/var/run") | list }}'
-  tags:
-    - test-install
-
 - name: Synchronize goss test plans
   template:
     src:   '{{ item | regex_replace("^/", "") }}.j2'
@@ -66,20 +41,6 @@
     - '{{ goss_templates }}'
   tags:
     - test-install
-
-- name: Install goss helper scripts
-  copy:
-    src:  '{{ item | regex_replace("^/", "") }}'
-    dest: '{{ item }}'
-    mode: '0555'
-    owner: root
-    group: root
-  with_items:
-    - /usr/local/bin/goss-prove-runner
-    - /usr/local/bin/goss-prove
-  tags:
-    - goss-prove
-    - goss-prove-install
 
 - name: Run goss test plans
   command:
