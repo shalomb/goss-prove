@@ -8,12 +8,14 @@
     - goss-install
 
 - name: Install goss
-  include: install.yml
+  include_tasks: install.yml
+  when:
+    - goss_install is defined
   tags:
     - goss-install
 
 - name: Run goss tests
-  include: runner.yml
+  include_tasks: runner.yml
   when:
     - goss_tests is defined
   tags:
