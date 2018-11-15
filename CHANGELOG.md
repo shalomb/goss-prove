@@ -1,3 +1,8 @@
+v1.4.1 - 2018-11-15T22:31:38
+----------------------------
+
+* Optimize role by splitting away install tasks from test tasks
+
 v1.4.0 - 2018-08-14T01:35:16
 ----------------------------
 
