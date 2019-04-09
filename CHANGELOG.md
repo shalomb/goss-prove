@@ -1,3 +1,9 @@
+v1.5.0 - 2019-04-09T14:43:45
+----------------------------
+
+* Clear goss_templates variable on every run to prevent test plans from
+  being applied to the wrong host groups
+
 v1.4.1 - 2018-11-15T22:31:38
 ----------------------------
 
