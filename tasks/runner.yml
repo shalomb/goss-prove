@@ -9,6 +9,14 @@
 #         - /path/to/foo.yaml
 #         - /path/to/bar.yaml
 
+# Ensure goss_templates is empty before this run to avoid previous
+# plays "tainting" this variable.
+- name: Reinitialize goss test plan inventory
+  set_fact:
+    goss_templates: []
+  tags:
+    - always
+
 - name: Collect goss test plan inventory
   set_fact:
     goss_templates:
